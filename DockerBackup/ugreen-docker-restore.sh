@@ -392,7 +392,8 @@ extract_archive(){
   mkdir_safe "$extract_parent"
 
   log_i "[Restore] Entpacke Archiv: ${RESTORE_ARCHIVE}" "[Restore] Extracting archive: ${RESTORE_ARCHIVE}"
-  tar -xzf "$RESTORE_ARCHIVE" -C "$extract_parent"
+  # Detect compression so backups created with COMPRESS_BACKUP=false also restore.
+  tar -xf "$RESTORE_ARCHIVE" -C "$extract_parent"
 
   backup_root="$(find "$extract_parent" -mindepth 1 -maxdepth 1 -type d -name 'ugreen-docker-backup_*' | head -n 1 || true)"
   [[ -n "$backup_root" ]] || backup_root="$(find "$extract_parent" -mindepth 1 -maxdepth 1 -type d | head -n 1 || true)"

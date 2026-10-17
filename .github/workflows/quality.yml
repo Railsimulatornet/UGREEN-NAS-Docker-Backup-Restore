@@ -1,0 +1,75 @@
+name: Quality checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Check shell syntax and ShellCheck errors
+        shell: bash
+        run: |
+          shellcheck --version
+          mapfile -d '' scripts < <(git ls-files -z -- '*.sh')
+          for script in "${scripts[@]}"; do
+            bash -n "$script"
+          done
+          if ((${#scripts[@]})); then
+            shellcheck --severity=error "${scripts[@]}"
+          fi
+
+      - name: Check Python files and embedded Python syntax
+        shell: bash
+        run: |
+          python3 - <<'PYCODE'
+          import ast
+          from pathlib import Path
+          import re
+          import subprocess
+
+          paths = subprocess.check_output(["git", "ls-files", "-z"]).decode().split("\0")
+          checked = 0
+          for name in filter(None, paths):
+              path = Path(name)
+              if path.suffix == ".py":
+                  ast.parse(path.read_text(), filename=name)
+                  checked += 1
+              elif path.suffix == ".sh":
+                  lines = path.read_text().splitlines(keepends=True)
+                  index = 0
+                  while index < len(lines):
+                      match = re.search(r"<<(-?)\s*(['\"])(PY[A-Za-z0-9_]*)\2", lines[index])
+                      index += 1
+                      if not match:
+                          continue
+                      delimiter = match.group(3)
+                      start = index
+                      block = []
+                      while index < len(lines):
+                          line = lines[index].lstrip("\t") if match.group(1) else lines[index]
+                          index += 1
+                          if line.rstrip("\r\n") == delimiter:
+                              break
+                          block.append(line)
+                      else:
+                          raise SyntaxError(f"{name}:{start}: unclosed Python heredoc {delimiter}")
+                      ast.parse("\n" * start + "".join(block), filename=name)
+                      checked += 1
+          print(f"Parsed {checked} Python files/blocks without executing them.")
+          PYCODE
+
+      - name: Run isolated regression tests
+        run: python3 -m unittest discover -s tests -v
