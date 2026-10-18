@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# UGREEN Docker Backup - v1.10
+# UGREEN Docker Backup - v1.10.1
 # Copyright (c) 2026 Roman Glos
 set -Eeuo pipefail
 
-SCRIPT_VERSION="1.10"
+SCRIPT_VERSION="1.10.1"
 SCRIPT_NAME="$(basename "$0")"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

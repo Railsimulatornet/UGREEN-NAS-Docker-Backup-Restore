@@ -1,5 +1,7 @@
 # 🚀 UGREEN NAS Docker Backup & Restore
 
+[![Quality](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/actions/workflows/quality.yml)
+
 ![Docker Backup Pack](Screen/DockerBackupPack.png)
 
 ## 📦 Überblick
@@ -22,7 +24,7 @@ Dieses Projekt stellt ein leistungsstarkes Backup-, Restore- und Migrationssyste
 ## 📁 Repository Struktur
 
 ```text
-v1.00/
+./
 ├── DockerBackup/
 │   ├── backup-exclude-paths.txt
 │   ├── dockersich.env.example
@@ -34,13 +36,15 @@ v1.00/
 │   └── DockerBackupPack.png
 │
 ├── README.md
-├── CHANGELOG.md
+├── Changelog.txt
 └── UGREEN_Docker_BR_DE_EN.pdf
 ```
 
 * * *
 
 ## ⚙️ Installation
+
+Das aktuelle ZIP-Paket liegt unter [Releases](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest).
 
 ### 1. Freigabe in UGOS anlegen
 
@@ -273,7 +277,6 @@ Enthalten im Repository:
 
 ```text
 UGREEN_Docker_BR_DE_EN.pdf
-UGREEN_Docker_BR_DE_EN.docx
 ```
 
 Das Handbuch enthält die vollständige Schritt-für-Schritt-Anleitung für Installation, Konfiguration, Backup, Restore und Migration.
