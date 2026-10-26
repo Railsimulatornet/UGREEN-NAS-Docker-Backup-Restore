@@ -1,0 +1,13 @@
+# Monitor third-party GitHub Actions. No automatic merge in this repository.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      actions-patch:
+        update-types: [patch]
+      actions-minor:
+        update-types: [minor]
