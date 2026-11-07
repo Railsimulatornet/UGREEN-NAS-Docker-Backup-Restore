@@ -9,9 +9,9 @@ python scripts/build_release.py --check
 python scripts/build_release.py --output dist
 ```
 
-Die Prüfung baut zweimal, vergleicht alle Paketdateien und führt die Regressionstests gegen die entpackten Skripte aus. `BUILDINFO.json` enthält Quell-Commit und Dateiprüfsummen; `SHA256SUMS` prüft die fertigen Downloads.
+Die Prüfung baut zweimal, vergleicht alle Paketdateien und führt die Regressionstests gegen die entpackten Skripte aus. `BUILDINFO.json` enthält Quell-Commit und Dateiprüfsummen; `SHA256SUMS` prüft die fertigen Downloads lokal und wird nicht als zusätzlicher Release-Anhang hochgeladen.
 
-The check builds twice, compares every payload file and runs regressions against the extracted scripts. `BUILDINFO.json` records the source commit and file hashes; `SHA256SUMS` covers the completed downloads.
+The check builds twice, compares every payload file and runs regressions against the extracted scripts. `BUILDINFO.json` records the source commit and file hashes; `SHA256SUMS` verifies the completed downloads locally and is not uploaded as an additional release asset.
 
 Veröffentlichen ist ein separater, manueller Schritt nach erfolgreicher Prüfung des endgültigen Commits. Keine bestehenden Tags oder Assets ersetzen. Ein Merge baut oder veröffentlicht kein produktives Deployment.
 
