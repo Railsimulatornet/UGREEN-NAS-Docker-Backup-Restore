@@ -1,6 +1,6 @@
 # UGREEN NAS Docker Backup & Restore
 
-Version: **1.12**
+Version: **1.13**
 
 [![Quality](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/actions/workflows/quality.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -142,9 +142,9 @@ Sichere vor dem Austausch die vorhandenen Skripte und deine Konfiguration. Über
 | [DockerBackup/](DockerBackup/) | Backup- und Restore-Skript, ENV-Vorlage, Ausschlussliste und Pfadzuordnung. |
 | [Screen/](Screen/) | Projektbilder. |
 | [Changelog.txt](Changelog.txt) | Bisherige Änderungen. |
-| [UGREEN_Docker_BR_DE_EN_v1.12.pdf](UGREEN_Docker_BR_DE_EN_v1.12.pdf) | Ausführliches Handbuch für Installation, Backup, Restore und Migration. |
+| [UGREEN_Docker_BR_DE_EN_v1.13.pdf](UGREEN_Docker_BR_DE_EN_v1.13.pdf) | Ausführliches Handbuch für Installation, Backup, Restore und Migration. |
 
-Aktuelle Paketversion: **v1.12**. Verwende die [Release-Dateien](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) für die Installation.
+Aktuelle Paketversion: **v1.13**. Verwende die [Release-Dateien](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) für die Installation.
 
 ### Fehlersuche
 
@@ -159,7 +159,7 @@ Aktuelle Paketversion: **v1.12**. Verwende die [Release-Dateien](https://github.
 
 ### Dokumentation und Lizenz
 
-Das [Handbuch (DE/EN)](UGREEN_Docker_BR_DE_EN_v1.12.pdf) enthält die ausführliche Schrittfolge. Dieses Projekt steht unter der [MIT-Lizenz](LICENSE).
+Das [Handbuch (DE/EN)](UGREEN_Docker_BR_DE_EN_v1.13.pdf) enthält die ausführliche Schrittfolge. Dieses Projekt steht unter der [MIT-Lizenz](LICENSE).
 
 Community-Projekt von **Roman Glos / Railsimulatornet**, kein offizielles UGREEN-Produkt. Verwendung auf eigene Verantwortung. Feedback, Verbesserungsvorschläge und Praxistests sind willkommen; mit einem Stern auf GitHub kannst du das Projekt unterstützen.
 
@@ -298,9 +298,9 @@ Back up the existing scripts and your configuration before replacing them. Take 
 | [DockerBackup/](DockerBackup/) | Backup and restore scripts, ENV template, exclusion list and path mapping. |
 | [Screen/](Screen/) | Project images. |
 | [Changelog.txt](Changelog.txt) | Previous changes. |
-| [UGREEN_Docker_BR_DE_EN_v1.12.pdf](UGREEN_Docker_BR_DE_EN_v1.12.pdf) | Detailed installation, backup, restore and migration manual. |
+| [UGREEN_Docker_BR_DE_EN_v1.13.pdf](UGREEN_Docker_BR_DE_EN_v1.13.pdf) | Detailed installation, backup, restore and migration manual. |
 
-Current package version: **v1.12**. Use the [release assets](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) for installation.
+Current package version: **v1.13**. Use the [release assets](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) for installation.
 
 ### Troubleshooting
 
@@ -315,7 +315,7 @@ Current package version: **v1.12**. Use the [release assets](https://github.com/
 
 ### Documentation and license
 
-The [DE/EN manual](UGREEN_Docker_BR_DE_EN_v1.12.pdf) contains the detailed procedure. This project is licensed under the [MIT License](LICENSE).
+The [DE/EN manual](UGREEN_Docker_BR_DE_EN_v1.13.pdf) contains the detailed procedure. This project is licensed under the [MIT License](LICENSE).
 
 Community project by **Roman Glos / Railsimulatornet**, not an official UGREEN product. Use at your own risk. Feedback, suggestions and practical tests are welcome; a GitHub star is another way to support the project.
 

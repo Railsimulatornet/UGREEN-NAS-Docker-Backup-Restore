@@ -1,4 +1,4 @@
-## Noch nicht veröffentlicht / Unreleased
+## 1.13 - 2026-11-07
 
 - DE: Fehlende oder nicht ausdrücklich erlaubte Projektordner außerhalb des Quellpfads brechen die Sicherung vor dem Stoppen der Container ab, statt ein unvollständiges Backup als erfolgreich zu melden.
 - EN: Missing project directories or directories outside the source path without explicit permission abort backup before stopping containers instead of reporting an incomplete backup as successful.

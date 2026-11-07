@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# UGREEN Docker Restore - v1.12
+# UGREEN Docker Restore - v1.13
 # Copyright (c) 2026 Roman Glos
 set -Eeuo pipefail
 
-SCRIPT_VERSION="1.12"
+SCRIPT_VERSION="1.13"
 SCRIPT_NAME="$(basename "$0")"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
