@@ -19,6 +19,7 @@
     "README.md": "Version: **{version}**"
   },
   "test_sources": {
+    "DOCKER_BACKUP_SOURCE": "DockerBackup/ugreen-docker-backup.sh",
     "DOCKER_RESTORE_SOURCE": "DockerBackup/ugreen-docker-restore.sh"
   },
   "separate_assets": [

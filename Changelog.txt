@@ -1,3 +1,9 @@
+## Noch nicht veröffentlicht / Unreleased
+
+- DE: Zusätzliche POSIX-ACLs werden in neuen Backups mitgesichert und beim Restore übernommen. Bereits vorhandene Ziele bleiben bei ausgeschaltetem Überschreiben auch bei aktiver Pfadumsetzung unverändert.
+- EN: New backups retain additional POSIX ACLs and restore them. Existing destination files remain unchanged when overwriting is disabled, including with path remapping enabled.
+- DE/EN: Ältere Archive ohne ACL-Metadaten können fehlende Einträge nicht nachträglich wiederherstellen. / Older archives without ACL metadata cannot recover missing entries.
+
 ## 1.10.2 - 2026-11-07
 
 - DE: Ausdrückliche Restore-Auswahl, sichere Rechte-Voreinstellungen und geprüfte Pakete.
