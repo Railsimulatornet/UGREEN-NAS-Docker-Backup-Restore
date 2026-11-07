@@ -142,7 +142,7 @@ Sichere vor dem Austausch die vorhandenen Skripte und deine Konfiguration. Über
 | [Changelog.txt](Changelog.txt) | Bisherige Änderungen. |
 | [UGREEN_Docker_BR_DE_EN.pdf](UGREEN_Docker_BR_DE_EN.pdf) | Ausführliches Handbuch für Installation, Backup, Restore und Migration. |
 
-Aktuelle Paketversion: **v1.10.1**. Verwende die [Release-Dateien](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) für die Installation.
+Verwende die [Release-Dateien](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) für die Installation. Die Paketversion steht am Anfang dieser README.
 
 ### Fehlersuche
 
@@ -296,7 +296,7 @@ Back up the existing scripts and your configuration before replacing them. Take 
 | [Changelog.txt](Changelog.txt) | Previous changes. |
 | [UGREEN_Docker_BR_DE_EN.pdf](UGREEN_Docker_BR_DE_EN.pdf) | Detailed installation, backup, restore and migration manual. |
 
-Current package version: **v1.10.1**. Use the [release assets](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) for installation.
+Use the [release assets](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) for installation. The package version is listed at the beginning of this README.
 
 ### Troubleshooting
 

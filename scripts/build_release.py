@@ -23,6 +23,12 @@ def payload():
     for name, marker in CONFIG['version_markers'].items():
         if marker.format(version=version) not in (ROOT / name).read_text(encoding='utf-8-sig'):
             raise ValueError('Version mismatch: ' + name)
+    readme = (ROOT / 'README.md').read_text(encoding='utf-8-sig')
+    current_references = re.findall(
+        r'(?:Aktuelle (?:Paket|Skript)version|Current (?:package|script) version):\s*\*\*[vV]?([0-9.]+)\*\*',
+        readme, re.IGNORECASE)
+    if any(reference != version for reference in current_references):
+        raise ValueError('Conflicting current version reference in README.md')
     files = {}
     for name in CONFIG['files']:
         data = (ROOT / name).read_bytes()
