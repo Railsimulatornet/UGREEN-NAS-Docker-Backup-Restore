@@ -54,10 +54,10 @@ RESTORE_NAMED_VOLUMES="${RESTORE_NAMED_VOLUMES:-false}"
 RESTORE_IMAGES="${RESTORE_IMAGES:-false}"
 RESTORE_EXTERNAL_BINDS="${RESTORE_EXTERNAL_BINDS:-false}"
 RESTORE_STANDALONE_CONTAINERS="${RESTORE_STANDALONE_CONTAINERS:-true}"
-RESTORE_FIX_PERMISSIONS="${RESTORE_FIX_PERMISSIONS:-true}"
-RESTORE_FIX_OWNER="${RESTORE_FIX_OWNER:-auto}"
-RESTORE_FIX_DIR_MODE="${RESTORE_FIX_DIR_MODE:-775}"
-RESTORE_FIX_FILE_MODE="${RESTORE_FIX_FILE_MODE:-664}"
+RESTORE_FIX_PERMISSIONS="${RESTORE_FIX_PERMISSIONS:-false}"
+RESTORE_FIX_OWNER="${RESTORE_FIX_OWNER:-keep}"
+RESTORE_FIX_DIR_MODE="${RESTORE_FIX_DIR_MODE:-}"
+RESTORE_FIX_FILE_MODE="${RESTORE_FIX_FILE_MODE:-}"
 
 UPDATE_UGOS_DOCKER_DB="${UPDATE_UGOS_DOCKER_DB:-true}"
 UGOS_DB_CONTENT_MODE="${UGOS_DB_CONTENT_MODE:-empty}" # empty|backup
@@ -496,12 +496,6 @@ project_selected(){
     return 0
   fi
 
-  # Safer default: RESTORE_ALL_PROJECTS=false and RESTORE_PROJECTS empty
-  # means all projects that are really present in project_archives.tsv.
-  if [[ -z "${RESTORE_PROJECTS// }" ]]; then
-    return 0
-  fi
-
   for p in $(split_words "$RESTORE_PROJECTS"); do
     [[ "$project" == "$p" ]] && return 0
   done
@@ -525,13 +519,30 @@ validate_restore_selection(){
     return 0
   fi
 
-  if [[ -z "${RESTORE_PROJECTS:-}" ]]; then
-    log_i "[Check] RESTORE_ALL_PROJECTS=false und RESTORE_PROJECTS leer. Es werden alle im Backup vorhandenen Projekte berücksichtigt." "[Check] RESTORE_ALL_PROJECTS=false and RESTORE_PROJECTS is empty. All projects present in the backup will be considered."
-    return 0
+  if [[ -z "${RESTORE_PROJECTS//[[:space:],;]/}" ]]; then
+    die "$(tr_text 'Keine Restore-Auswahl. RESTORE_PROJECTS setzen oder alle Projekte ausdrücklich mit RESTORE_ALL_PROJECTS=true auswählen.' 'No restore selection. Set RESTORE_PROJECTS or explicitly select all projects with RESTORE_ALL_PROJECTS=true.')"
   fi
 
   log_i "[Check] Restore-Auswahl: ${RESTORE_PROJECTS}" "[Check] Restore selection: ${RESTORE_PROJECTS}"
   return 0
+}
+
+show_restore_plan(){
+  local metadata="${backup_root}/metadata/project_archives.tsv"
+  [[ -f "$metadata" ]] || die 'project_archives.tsv missing'
+  local project archive workdir config_files count=0
+  log_i '[Plan] Ausgewählte Projekte und Zielpfade:' '[Plan] Selected projects and target paths:'
+  while IFS=$'\t' read -r project archive workdir config_files; do
+    [[ "$project" == project || -z "$project" ]] && continue
+    project_selected "$project" || continue
+    log "  ${project} -> $(map_path "$workdir")"
+    count=$((count + 1))
+  done < "$metadata"
+  (( count > 0 )) || die "$(tr_text 'Keine Projekte für diese Auswahl im Archiv.' 'No projects in the archive match this selection.')"
+  log "[Plan] overwrite=${RESTORE_OVERWRITE_EXISTING}; stop=${RESTORE_STOP_EXISTING_PROJECTS}; compose_up=${RESTORE_RUN_COMPOSE_UP}"
+  log "[Plan] images=${RESTORE_IMAGES}; named_volumes=${RESTORE_NAMED_VOLUMES}; external_binds=${RESTORE_EXTERNAL_BINDS}"
+  log "[Plan] permissions=${RESTORE_FIX_PERMISSIONS}; owner=${RESTORE_FIX_OWNER}; directory_mode=${RESTORE_FIX_DIR_MODE}; file_mode=${RESTORE_FIX_FILE_MODE}"
+  log "[Plan] ugos_database=${UPDATE_UGOS_DOCKER_DB}; ugos_refresh=${REFRESH_UGOS_DOCKER_APP}; networks=${RESTORE_RECREATE_NETWORKS}"
 }
 
 confirm_restore(){
@@ -635,8 +646,6 @@ PY
 restore_project_dirs(){
   local mapfile="${backup_root}/metadata/project_archives.tsv"
   [[ -f "$mapfile" ]] || die "$(tr_text 'project_archives.tsv fehlt im Backup.' 'project_archives.tsv is missing in the backup.')"
-
-  mkdir_safe "$SOURCE_DIR"
 
   local project archive workdir config_files target_dir target_parent tmp_project top
   while IFS=$'\t' read -r project archive workdir config_files; do
@@ -1293,11 +1302,6 @@ compose_up_projects(){
       continue
     fi
 
-    if is_true "$RESTORE_STOP_EXISTING_PROJECTS"; then
-      log_i "[Compose] Stoppe bestehendes Projekt ${project}, falls vorhanden." "[Compose] Stopping existing project ${project}, if present."
-      run_cmd_in_dir "$target_dir" $DOCKER_BIN compose -p "$project" down || true
-    fi
-
     args=()
     missing=0
     IFS=',' read -r -a cf_array <<< "${config_files:-}"
@@ -1330,6 +1334,9 @@ compose_up_projects(){
       continue
     fi
 
+    if is_true "$RESTORE_STOP_EXISTING_PROJECTS"; then
+      run_cmd_in_dir "$target_dir" $DOCKER_BIN compose -p "$project" "${args[@]}" down || return 1
+    fi
     log_i "[Compose] Starte Projekt ${project}." "[Compose] Starting project ${project}."
     if ! run_cmd_in_dir "$target_dir" $DOCKER_BIN compose -p "$project" "${args[@]}" up -d; then
       reason="${RESTORE_FAILURE_REASON:-$(tr_text "docker compose up fehlgeschlagen" "docker compose up failed")}"
@@ -1448,8 +1455,6 @@ def selected(name):
     if name in exclude_projects:
         return False
     if restore_all:
-        return True
-    if not restore_projects:
         return True
     return name in restore_projects
 
@@ -1685,7 +1690,7 @@ exclude_projects = set(split(os.environ.get("EXCLUDE_PROJECTS", "")))
 def selected(name):
     if not name or name in exclude_projects:
         return False
-    if restore_all or not restore_projects:
+    if restore_all:
         return True
     return name in restore_projects
 
@@ -1840,6 +1845,7 @@ main(){
   log_i "DRY_RUN: ${DRY_RUN}" "DRY_RUN: ${DRY_RUN}"
 
   validate_restore_selection
+  show_restore_plan
   confirm_restore
 
   restore_images
