@@ -72,6 +72,22 @@ map_path() { printf '%s' "$1"; }
                 result = self.run_helper('validate_restore_selection', RESTORE_PROJECTS=selection)
                 self.assertNotEqual(result.returncode, 0, result.stdout)
 
+    def test_completion_mail_distinguishes_plan_from_actual_restore(self):
+        for language, dry, title, status in (
+            ('de', 'true', 'Testlauf abgeschlossen – keine Wiederherstellung ausgeführt', 'Änderungsplan erstellt'),
+            ('en', 'true', 'Dry run completed – no restore performed', 'Change plan prepared'),
+            ('de', 'false', 'Restore erfolgreich', 'Erfolgreich'),
+            ('en', 'false', 'Restore successful', 'Successful'),
+        ):
+            with self.subTest(language=language, dry=dry):
+                result = self.run_helper('''
+build_restore_mail_details(){ printf 'details'; }
+send_mail(){ printf '%s\\n' "$@"; }
+send_restore_completion_mail '00:00:01' '/tmp/attachment'
+''', LANGUAGE=language, DRY_RUN=dry)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout.splitlines(), ['success', title, status, 'details', '/tmp/attachment'])
+
     def test_empty_selection_does_not_select_project(self):
         self.assertNotEqual(self.run_helper('project_selected alpha').returncode, 0)
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# UGREEN Docker Restore - v1.12
+# UGREEN Docker Restore - v1.13
 # Copyright (c) 2026 Roman Glos
 set -Eeuo pipefail
 
-SCRIPT_VERSION="1.12"
+SCRIPT_VERSION="1.13"
 SCRIPT_NAME="$(basename "$0")"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -1824,6 +1824,17 @@ on_error(){
 }
 trap on_error ERR
 
+send_restore_completion_mail(){
+  local duration_hm="$1" attach="$2" title status
+  title="$(tr_text 'Restore erfolgreich' 'Restore successful')"
+  status="$(tr_text 'Erfolgreich' 'Successful')"
+  if is_true "$DRY_RUN"; then
+    title="$(tr_text 'Testlauf abgeschlossen – keine Wiederherstellung ausgeführt' 'Dry run completed – no restore performed')"
+    status="$(tr_text 'Änderungsplan erstellt' 'Change plan prepared')"
+  fi
+  send_mail "success" "$title" "$status" "$(build_restore_mail_details success "$duration_hm")" "$attach" || true
+}
+
 main(){
   mkdir_safe "$TEMP_DIR"
   mkdir_safe "$LOG_DIR"
@@ -1860,7 +1871,7 @@ main(){
   duration=$((end_epoch - script_start_epoch))
   duration_hm=$(printf "%02d:%02d:%02d" $((duration/3600)) $(((duration%3600)/60)) $((duration%60)))
   attach="$(mail_tail_file)"
-  send_mail "success" "$(tr_text 'Restore erfolgreich' 'Restore successful')" "$(tr_text 'Erfolgreich' 'Successful')" "$(build_restore_mail_details success "$duration_hm")" "$attach" || true
+  send_restore_completion_mail "$duration_hm" "$attach"
 
   log_i "Restore abgeschlossen." "Restore completed."
   cleanup_restore_temp

@@ -1,6 +1,6 @@
 # UGREEN NAS Docker Backup & Restore
 
-Version: **1.12**
+Version: **1.13**
 
 [![Quality](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/actions/workflows/quality.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -72,8 +72,10 @@ Die vollständige Vorlage liegt in [DockerBackup/dockersich.env.example](DockerB
 | Sprache und Anzeigename | `LANGUAGE=de` oder `LANGUAGE=en`; `HOST_LABEL` für Logs und Mails. |
 | Automatische Erkennung | `SOURCE_DIR=auto`; auch `DOCKER_ROOT_DIR=auto` und `UGOS_DOCKER_DB=auto` werden unterstützt. |
 | Arbeitsverzeichnisse | `BACKUP_DIR`, `TEMP_DIR` und `LOG_DIR` legen Archiv-, Arbeits- und Logpfade fest. |
+| Temporäres Restore-Verzeichnis | `TEMP_DIR` muss Dateirechte und ACLs unverändert übernehmen können und genügend freien Platz für das entpackte Backup bieten. UGOS-Freigaben können beim Entpacken Rechte vererben. Verwende deshalb ein geeignetes lokales Arbeitsverzeichnis, beispielsweise unter `/tmp`, und prüfe dessen freien Platz. Freigaberechte dafür nicht pauschal ändern. |
 | Archiv und Aufbewahrung | `COMPRESS_BACKUP=true` erzeugt ein komprimiertes Archiv; `false` ein TAR-Archiv. `KEEP_BACKUPS` begrenzt die aufbewahrten Backups. |
 | Projektwahl beim Backup | `BACKUP_ALL_PROJECTS`, `INCLUDE_PROJECTS`, `EXCLUDE_PROJECTS` und `EXCLUDE_CONTAINERS` steuern die Auswahl. |
+| Projektpfade beim Backup | Ausgewählte Projektordner müssen vorhanden sein und unter `SOURCE_DIR` liegen. Andernfalls bricht das Backup vor dem Stoppen der Container ab. `BACKUP_PROJECTS_OUTSIDE_SOURCE_DIR=true` erlaubt ausdrücklich auch vorhandene Projektordner außerhalb dieses Pfads. |
 | Standalone-Container | `BACKUP_STANDALONE_CONTAINERS=true` schließt Container ohne Compose-Projekt ein. |
 | Container stoppen | `STOP_CONTAINERS=true` und `STOP_TIMEOUT` steuern das Stoppen vor dem Backup. Zuvor laufende Container werden danach wieder gestartet. |
 | Ausschlüsse | `BACKUP_EXCLUDE_PATHS_FILE=backup-exclude-paths.txt` verweist auf die [Ausschlussliste](DockerBackup/backup-exclude-paths.txt). |
@@ -140,9 +142,9 @@ Sichere vor dem Austausch die vorhandenen Skripte und deine Konfiguration. Über
 | [DockerBackup/](DockerBackup/) | Backup- und Restore-Skript, ENV-Vorlage, Ausschlussliste und Pfadzuordnung. |
 | [Screen/](Screen/) | Projektbilder. |
 | [Changelog.txt](Changelog.txt) | Bisherige Änderungen. |
-| [UGREEN_Docker_BR_DE_EN_v1.12.pdf](UGREEN_Docker_BR_DE_EN_v1.12.pdf) | Ausführliches Handbuch für Installation, Backup, Restore und Migration. |
+| [UGREEN_Docker_BR_DE_EN_v1.13.pdf](UGREEN_Docker_BR_DE_EN_v1.13.pdf) | Ausführliches Handbuch für Installation, Backup, Restore und Migration. |
 
-Aktuelle Paketversion: **v1.12**. Verwende die [Release-Dateien](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) für die Installation.
+Aktuelle Paketversion: **v1.13**. Verwende die [Release-Dateien](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) für die Installation.
 
 ### Fehlersuche
 
@@ -157,7 +159,7 @@ Aktuelle Paketversion: **v1.12**. Verwende die [Release-Dateien](https://github.
 
 ### Dokumentation und Lizenz
 
-Das [Handbuch (DE/EN)](UGREEN_Docker_BR_DE_EN_v1.12.pdf) enthält die ausführliche Schrittfolge. Dieses Projekt steht unter der [MIT-Lizenz](LICENSE).
+Das [Handbuch (DE/EN)](UGREEN_Docker_BR_DE_EN_v1.13.pdf) enthält die ausführliche Schrittfolge. Dieses Projekt steht unter der [MIT-Lizenz](LICENSE).
 
 Community-Projekt von **Roman Glos / Railsimulatornet**, kein offizielles UGREEN-Produkt. Verwendung auf eigene Verantwortung. Feedback, Verbesserungsvorschläge und Praxistests sind willkommen; mit einem Stern auf GitHub kannst du das Projekt unterstützen.
 
@@ -226,8 +228,10 @@ The complete template is [DockerBackup/dockersich.env.example](DockerBackup/dock
 | Language and display name | `LANGUAGE=de` or `LANGUAGE=en`; `HOST_LABEL` identifies the NAS in logs and emails. |
 | Automatic detection | `SOURCE_DIR=auto`; `DOCKER_ROOT_DIR=auto` and `UGOS_DOCKER_DB=auto` are also supported. |
 | Working directories | `BACKUP_DIR`, `TEMP_DIR` and `LOG_DIR` define archive, temporary and log paths. |
+| Temporary restore directory | `TEMP_DIR` must preserve file permissions and ACLs and have enough free space for the extracted backup. UGOS shares may inherit permissions during extraction. Use a suitable local working directory, for example under `/tmp`, and check its available space. Do not broadly change share permissions to work around this. |
 | Archive and retention | `COMPRESS_BACKUP=true` creates a compressed archive; `false` creates a TAR archive. `KEEP_BACKUPS` limits retained backups. |
 | Backup project selection | `BACKUP_ALL_PROJECTS`, `INCLUDE_PROJECTS`, `EXCLUDE_PROJECTS` and `EXCLUDE_CONTAINERS` control selection. |
+| Backup project paths | Selected project directories must exist and be within `SOURCE_DIR`. Otherwise, backup aborts before stopping containers. `BACKUP_PROJECTS_OUTSIDE_SOURCE_DIR=true` explicitly permits existing project directories outside this path. |
 | Standalone containers | `BACKUP_STANDALONE_CONTAINERS=true` includes containers without a Compose project. |
 | Stopping containers | `STOP_CONTAINERS=true` and `STOP_TIMEOUT` control stopping before backup. Previously running containers are started again afterwards. |
 | Exclusions | `BACKUP_EXCLUDE_PATHS_FILE=backup-exclude-paths.txt` points to the [exclusion list](DockerBackup/backup-exclude-paths.txt). |
@@ -294,9 +298,9 @@ Back up the existing scripts and your configuration before replacing them. Take 
 | [DockerBackup/](DockerBackup/) | Backup and restore scripts, ENV template, exclusion list and path mapping. |
 | [Screen/](Screen/) | Project images. |
 | [Changelog.txt](Changelog.txt) | Previous changes. |
-| [UGREEN_Docker_BR_DE_EN_v1.12.pdf](UGREEN_Docker_BR_DE_EN_v1.12.pdf) | Detailed installation, backup, restore and migration manual. |
+| [UGREEN_Docker_BR_DE_EN_v1.13.pdf](UGREEN_Docker_BR_DE_EN_v1.13.pdf) | Detailed installation, backup, restore and migration manual. |
 
-Current package version: **v1.12**. Use the [release assets](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) for installation.
+Current package version: **v1.13**. Use the [release assets](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/releases/latest) for installation.
 
 ### Troubleshooting
 
@@ -311,7 +315,7 @@ Current package version: **v1.12**. Use the [release assets](https://github.com/
 
 ### Documentation and license
 
-The [DE/EN manual](UGREEN_Docker_BR_DE_EN_v1.12.pdf) contains the detailed procedure. This project is licensed under the [MIT License](LICENSE).
+The [DE/EN manual](UGREEN_Docker_BR_DE_EN_v1.13.pdf) contains the detailed procedure. This project is licensed under the [MIT License](LICENSE).
 
 Community project by **Roman Glos / Railsimulatornet**, not an official UGREEN product. Use at your own risk. Feedback, suggestions and practical tests are welcome; a GitHub star is another way to support the project.
 
