@@ -5,6 +5,8 @@ import re
 from pathlib import Path
 import subprocess
 import tempfile
+import tarfile
+import io
 import unittest
 
 REPO = Path(__file__).resolve().parents[1]
@@ -126,6 +128,73 @@ run_cmd_in_dir() { echo UNEXPECTED_COMMAND; return 99; }
 compose_up_projects
 ''', RESTORE_PROJECTS='alpha')
         self.assertNotIn('UNEXPECTED_COMMAND', result.stdout)
+
+
+class RestoreEntryTests(unittest.TestCase):
+    def check_entry(self, dry_run, selection, expect_success):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            commands = root / 'bin'
+            commands.mkdir()
+            audit = root / 'calls'
+            docker = commands / 'docker'
+            docker.write_text('''#!/usr/bin/env bash
+printf '%s\\n' "$*" >> "$AUDIT"
+[[ "$*" == info ]] && exit 0
+exit 99
+''')
+            docker.chmod(0o755)
+            for name in ('systemctl', 'service', 'chown', 'chmod'):
+                stub = commands / name
+                stub.write_text('#!/usr/bin/env bash\necho UNEXPECTED >> "$AUDIT"\nexit 99\n')
+                stub.chmod(0o755)
+            target = root / 'target'
+            target.mkdir()
+            project = target / 'alpha'
+            project.mkdir()
+            compose = project / 'compose.yaml'
+            compose.write_text('services: {}\n')
+            sentinel = project / 'keep'
+            sentinel.write_bytes(b'UNCHANGED\x00')
+            original_mode = sentinel.stat().st_mode
+            database = root / 'ugos.db'
+            database.write_bytes(b'UNCHANGED DATABASE')
+            archive = root / 'backup.tar.gz'
+            members = {
+                'metadata/manifest.env': 'SCRIPT_VERSION=fixture\n',
+                'metadata/project_archives.tsv':
+                    'project\tarchive\tworkdir\tconfig_files\n'
+                    f'alpha\tprojects/alpha.tar\t{project}\t{compose}\n',
+            }
+            with tarfile.open(archive, 'w:gz') as handle:
+                for name, content in members.items():
+                    payload = content.encode()
+                    info = tarfile.TarInfo('ugreen-docker-backup_fixture/' + name)
+                    info.size = len(payload)
+                    handle.addfile(info, io.BytesIO(payload))
+            env = dict(os.environ, ENV_FILE='/dev/null', LANGUAGE='en',
+                       BACKUP_DIR=str(root / 'backups'), SOURCE_DIR=str(target),
+                       DOCKER_ROOT_DIR=str(root / 'docker-root'), UGOS_DOCKER_DB=str(database),
+                       DOCKER_BIN=str(docker), RESTORE_ARCHIVE=str(archive),
+                       RESTORE_ALL_PROJECTS='false', RESTORE_PROJECTS=selection,
+                       DRY_RUN=dry_run, SEND_MAIL='false', RESTORE_CONFIRMATION_REQUIRED='false',
+                       RESTORE_OVERWRITE_EXISTING='true', AUDIT=str(audit),
+                       PATH=str(commands) + os.pathsep + os.environ['PATH'])
+            result = subprocess.run(['bash', str(REPO / 'DockerBackup/ugreen-docker-restore.sh')],
+                                    env=env, capture_output=True, text=True, timeout=15)
+            self.assertEqual(result.returncode == 0, expect_success, result.stdout + result.stderr)
+            self.assertEqual(audit.read_text().splitlines(), ['info'])
+            self.assertEqual(sentinel.read_bytes(), b'UNCHANGED\x00')
+            self.assertEqual(sentinel.stat().st_mode, original_mode)
+            self.assertEqual(database.read_bytes(), b'UNCHANGED DATABASE')
+            self.assertEqual(compose.read_text(), 'services: {}\n')
+            self.assertEqual(sorted(path.name for path in target.iterdir()), ['alpha'])
+
+    def test_full_dry_run_preserves_targets_and_database(self):
+        self.check_entry('true', 'alpha', True)
+
+    def test_empty_selection_aborts_before_real_restore(self):
+        self.check_entry('false', '', False)
 
 
 if __name__ == '__main__':
