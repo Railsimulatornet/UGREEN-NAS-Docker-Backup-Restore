@@ -14,6 +14,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = json.loads((ROOT / 'release.json').read_text(encoding='utf-8'))
 SOURCE_COMMIT = None
+LAUNCH_CHECK = False
 
 
 def digest(data):
@@ -86,7 +87,7 @@ def build(output, files):
                            stdout=subprocess.DEVNULL)
             config = (';!@Install@!UTF-8!\nTitle="Veyon Updater v' + CONFIG['version'] +
                       '"\nBeginPrompt="Veyon Updater installieren?"\n'
-                      'RunProgram="Install-Veyon-AutoUpdate.cmd"\n;!@InstallEnd@!\n').encode()
+                      'Progress="no"\nRunProgram="cmd.exe /d /c Install-Veyon-AutoUpdate.cmd"\n;!@InstallEnd@!\n').encode()
             setup.write_bytes(stub + config + compressed.read_bytes())
             extracted = directory / 'verify'
             subprocess.run([seven_zip(), 'x', '-y', '-o' + str(extracted), str(setup.resolve())],
@@ -128,6 +129,23 @@ def check(files):
                    str(ROOT / 'tests/test_update.ps1')] if CONFIG.get('setup') else [
                    'python3', '-m', 'unittest', 'discover', '-s', 'tests', '-v']
         subprocess.run(command, cwd=ROOT, env=env, check=True)
+        if LAUNCH_CHECK:
+            if not CONFIG.get('setup') or os.name != 'nt':
+                raise RuntimeError('Setup launch check requires Windows and a setup package')
+            marker = directory / 'bootstrap-marker.txt'
+            # Exercise the same SFX bootstrap with a harmless stand-in, never the real installer.
+            synthetic = {'Install-Veyon-AutoUpdate.cmd':
+                         b'@echo off\r\n> "%SFX_TEST_MARKER%" echo %CD%\r\nexit /b 0\r\n'}
+            probe = build(directory / 'bootstrap', synthetic)
+            env = dict(os.environ, SFX_TEST_MARKER=str(marker))
+            subprocess.run([str(probe[-1]), '-y'], env=env, check=True, timeout=30,
+                           creationflags=subprocess.CREATE_NO_WINDOW)
+            if not marker.is_file():
+                raise ValueError('SFX did not run the synthetic bootstrap')
+            extraction = Path(marker.read_text().strip())
+            if extraction.exists():
+                raise ValueError('SFX left its temporary extraction directory behind')
+            print('SFX bootstrap launch and extraction cleanup: OK')
     print('Package versions, contents, checksums, reproducibility and packaged-source tests: OK')
 
 
@@ -136,8 +154,10 @@ if __name__ == '__main__':
     parser.add_argument('--output', type=Path)
     parser.add_argument('--check', action='store_true')
     parser.add_argument('--source-commit', help='Verified source SHA when building from an exported source tree without Git')
+    parser.add_argument('--check-setup-launch', action='store_true', help='Windows: exercise the SFX with a harmless installer stand-in')
     args = parser.parse_args()
     SOURCE_COMMIT = args.source_commit
+    LAUNCH_CHECK = args.check_setup_launch
     files = payload()
     if args.check:
         check(files)
