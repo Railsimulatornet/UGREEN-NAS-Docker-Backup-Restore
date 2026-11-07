@@ -481,8 +481,7 @@ map_path(){
 
 project_selected(){
   local project="$1"
-  local restore_all p
-  restore_all="$(lower "$RESTORE_ALL_PROJECTS")"
+  local p
 
   for p in $(split_words "$EXCLUDE_PROJECTS"); do
     [[ "$project" == "$p" ]] && return 1
@@ -492,7 +491,7 @@ project_selected(){
     return 1
   fi
 
-  if [[ "$restore_all" == "true" || "$restore_all" == "1" || "$restore_all" == "yes" || "$restore_all" == "ja" ]]; then
+  if is_true "$RESTORE_ALL_PROJECTS"; then
     return 0
   fi
 
@@ -1427,7 +1426,7 @@ def split(v):
         return []
     return [x for x in re.split(r"[\s,;]+", v.strip()) if x]
 
-restore_all = os.environ.get("RESTORE_ALL_PROJECTS", "false").lower() in ("true", "1", "yes", "ja")
+restore_all = os.environ.get("RESTORE_ALL_PROJECTS", "false").lower() in ("true", "1", "yes", "y", "ja")
 restore_projects = set(split(os.environ.get("RESTORE_PROJECTS", "")))
 exclude_projects = set(split(os.environ.get("EXCLUDE_PROJECTS", "")))
 
@@ -1683,7 +1682,7 @@ def add_limited(lines, title, items, limit=10):
     if len(items) > limit:
         lines.append("- " + t(f"... und {len(items)-limit} weitere", f"... and {len(items)-limit} more"))
 
-restore_all = os.environ.get("RESTORE_ALL_PROJECTS", "false").lower() in ("true", "1", "yes", "ja")
+restore_all = os.environ.get("RESTORE_ALL_PROJECTS", "false").lower() in ("true", "1", "yes", "y", "ja")
 restore_projects = set(split(os.environ.get("RESTORE_PROJECTS", "")))
 exclude_projects = set(split(os.environ.get("EXCLUDE_PROJECTS", "")))
 

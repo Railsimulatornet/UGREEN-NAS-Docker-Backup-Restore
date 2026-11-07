@@ -75,7 +75,8 @@ map_path() { printf '%s' "$1"; }
         self.assertNotEqual(self.run_helper('project_selected alpha').returncode, 0)
 
     def test_explicit_all_and_exclusions(self):
-        self.assertEqual(self.run_helper('project_selected alpha', RESTORE_ALL_PROJECTS='true').returncode, 0)
+        for flag in ('true', '1', 'yes', 'y', 'ja', 'TRUE'):
+            self.assertEqual(self.run_helper('project_selected alpha', RESTORE_ALL_PROJECTS=flag).returncode, 0)
         self.assertNotEqual(self.run_helper('project_selected alpha', RESTORE_ALL_PROJECTS='true', EXCLUDE_PROJECTS='alpha').returncode, 0)
 
     def test_targeted_selection(self):
