@@ -1,5 +1,7 @@
 # UGREEN NAS Docker Backup & Restore
 
+Version: **1.10.2**
+
 [![Quality](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/actions/workflows/quality.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -313,3 +315,7 @@ The [DE/EN manual](UGREEN_Docker_BR_DE_EN.pdf) contains the detailed procedure. 
 
 Community project by **Roman Glos / Railsimulatornet**, not an official UGREEN product. Use at your own risk. Feedback, suggestions and practical tests are welcome; a GitHub star is another way to support the project.
 
+
+## Paketprüfung / Package verification
+
+[BUILDING.md](BUILDING.md) beschreibt den geprüften Paketbau. / See [BUILDING.md](BUILDING.md) for package build and verification.
