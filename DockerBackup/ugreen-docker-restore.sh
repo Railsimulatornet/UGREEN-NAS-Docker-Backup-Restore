@@ -661,8 +661,7 @@ restore_project_dirs(){
     if [[ -e "$target_dir" ]]; then
       if is_false "$RESTORE_OVERWRITE_EXISTING"; then
         log_i "[Restore] Ziel existiert bereits und wird nicht überschrieben: ${target_dir}" "[Restore] Target already exists and will not be overwritten: ${target_dir}"
-        # Existing project folder is kept, but remap still has to be applied to compose/.env/text files.
-        apply_path_remap_to_files "$target_dir"
+        # Keeping an existing folder also keeps its file contents unchanged.
         continue
       fi
       run_cmd mv "$target_dir" "${target_dir}.restore-backup-$(date +'%Y-%m-%d_%H-%M-%S')"
@@ -676,7 +675,7 @@ restore_project_dirs(){
     tmp_project="${extract_parent}/project_extract_${project}"
     rm -rf "$tmp_project"
     mkdir_safe "$tmp_project"
-    tar -xpf "${backup_root}/${archive}" -C "$tmp_project"
+    tar --acls -xpf "${backup_root}/${archive}" -C "$tmp_project"
     top="$(find "$tmp_project" -mindepth 1 -maxdepth 1 -type d | head -n 1 || true)"
     [[ -n "$top" ]] || die "$(tr_text "Projektarchiv leer oder ungültig: ${archive}" "Project archive empty or invalid: ${archive}")"
     mv "$top" "$target_dir"
@@ -715,7 +714,7 @@ restore_named_volumes(){
     tmp="${extract_parent}/volume_extract_${name}"
     rm -rf "$tmp"
     mkdir_safe "$tmp"
-    tar -xpf "${backup_root}/${archive}" -C "$tmp"
+    tar --acls -xpf "${backup_root}/${archive}" -C "$tmp"
     top="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -n 1 || true)"
     [[ -n "$top" ]] || continue
     rm -rf "$target_source"
@@ -861,7 +860,7 @@ restore_external_binds(){
     tmp="${extract_parent}/external_bind_extract_${project}_${target_base}"
     rm -rf "$tmp"
     mkdir_safe "$tmp"
-    tar -xpf "$backup_archive" -C "$tmp"
+    tar --acls -xpf "$backup_archive" -C "$tmp"
     top="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -n 1 || true)"
     if [[ -z "$top" ]]; then
       top="$(find "$tmp" -mindepth 1 -maxdepth 1 | head -n 1 || true)"

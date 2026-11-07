@@ -1232,7 +1232,7 @@ copy_project_dirs(){
     else
       log_i "[Sicherung] Projekt ${project}: ${workdir}" "[Backup] Project ${project}: ${workdir}"
     fi
-    tar --warning=no-file-ignored --numeric-owner "${TAR_EXCLUDE_ARGS[@]}" -C "$parent" -cpf "${stage_dir}/${archive}" "$base"
+    tar --acls --warning=no-file-ignored --numeric-owner "${TAR_EXCLUDE_ARGS[@]}" -C "$parent" -cpf "${stage_dir}/${archive}" "$base"
     echo -e "${project}\t${archive}\t${workdir}\t${config_files}" >> "$archive_map"
   done < "$inventory"
 }
@@ -1258,7 +1258,7 @@ backup_named_volumes(){
     base="$(basename "$source")"
     build_tar_exclude_args "$parent" "$base"
     log_i "[Volumes] Sichere Volume ${name}." "[Volumes] Backing up volume ${name}."
-    tar --warning=no-file-ignored --numeric-owner "${TAR_EXCLUDE_ARGS[@]}" -C "$parent" -cpf "${stage_dir}/${archive}" "$base"
+    tar --acls --warning=no-file-ignored --numeric-owner "${TAR_EXCLUDE_ARGS[@]}" -C "$parent" -cpf "${stage_dir}/${archive}" "$base"
     echo -e "${name}\t${archive}\t${source}" >> "$done_file"
   done < "$list"
 }
@@ -1321,7 +1321,7 @@ backup_external_binds(){
 
     build_tar_exclude_args "$parent" "$base"
     log_i "[Bind-Mounts] Sichere externen Pfad: ${source}" "[Bind mounts] Backing up external path: ${source}"
-    tar --warning=no-file-ignored --numeric-owner "${TAR_EXCLUDE_ARGS[@]}" -C "$parent" -cpf "${stage_dir}/${archive}" "$base"
+    tar --acls --warning=no-file-ignored --numeric-owner "${TAR_EXCLUDE_ARGS[@]}" -C "$parent" -cpf "${stage_dir}/${archive}" "$base"
     source_to_archive[$source]="$archive"
     echo -e "${project}\t${container}\t${source}\t${destination}\t${rw}\t${archive}" >> "$done_file"
   done < "$list"
@@ -1351,10 +1351,10 @@ create_final_archive(){
 
     if command -v pigz >/dev/null 2>&1; then
       log_i "[Archiv] Erstelle komprimiertes Archiv direkt mit pigz: ${backup_fullpath}" "[Archive] Creating compressed archive directly with pigz: ${backup_fullpath}"
-      tar --warning=no-file-ignored --numeric-owner -C "$stage_parent" -cf - "$(basename "$stage_dir")" | pigz -c > "$tmpfile"
+      tar --acls --warning=no-file-ignored --numeric-owner -C "$stage_parent" -cf - "$(basename "$stage_dir")" | pigz -c > "$tmpfile"
     else
       log_i "[Archiv] Erstelle komprimiertes Archiv direkt mit gzip: ${backup_fullpath}" "[Archive] Creating compressed archive directly with gzip: ${backup_fullpath}"
-      tar --warning=no-file-ignored --numeric-owner -C "$stage_parent" -cf - "$(basename "$stage_dir")" | gzip -c > "$tmpfile"
+      tar --acls --warning=no-file-ignored --numeric-owner -C "$stage_parent" -cf - "$(basename "$stage_dir")" | gzip -c > "$tmpfile"
     fi
 
     mv -f "$tmpfile" "$backup_fullpath"
@@ -1363,7 +1363,7 @@ create_final_archive(){
     tmpfile="${tarfile}.part"
     rm -f "$tmpfile" "$backup_fullpath" 2>/dev/null || true
     log_i "[Archiv] Erstelle finales TAR-Archiv ohne Komprimierung: ${backup_fullpath}" "[Archive] Creating final TAR archive without compression: ${backup_fullpath}"
-    tar --warning=no-file-ignored --numeric-owner -C "$stage_parent" -cpf "$tmpfile" "$(basename "$stage_dir")"
+    tar --acls --warning=no-file-ignored --numeric-owner -C "$stage_parent" -cpf "$tmpfile" "$(basename "$stage_dir")"
     mv -f "$tmpfile" "$backup_fullpath"
   fi
 
