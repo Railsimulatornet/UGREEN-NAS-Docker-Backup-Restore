@@ -1,3 +1,10 @@
+## Noch nicht veröffentlicht / Unreleased
+
+- DE: Fehlende oder nicht ausdrücklich erlaubte Projektordner außerhalb des Quellpfads brechen die Sicherung vor dem Stoppen der Container ab, statt ein unvollständiges Backup als erfolgreich zu melden.
+- EN: Missing project directories or directories outside the source path without explicit permission abort backup before stopping containers instead of reporting an incomplete backup as successful.
+- DE: Testlauf-Mails unterscheiden den Änderungsplan von einer ausgeführten Wiederherstellung. Hinweise zu geeigneten temporären Restore-Verzeichnissen ergänzt.
+- EN: Dry-run emails distinguish a change plan from an actual restore. Added guidance on suitable temporary restore directories.
+
 ## 1.12 - 2026-11-07
 
 - DE: Zusätzliche POSIX-ACLs werden in neuen Backups mitgesichert und beim Restore übernommen. Bereits vorhandene Ziele bleiben bei ausgeschaltetem Überschreiben auch bei aktiver Pfadumsetzung unverändert.

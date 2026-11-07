@@ -72,8 +72,10 @@ Die vollständige Vorlage liegt in [DockerBackup/dockersich.env.example](DockerB
 | Sprache und Anzeigename | `LANGUAGE=de` oder `LANGUAGE=en`; `HOST_LABEL` für Logs und Mails. |
 | Automatische Erkennung | `SOURCE_DIR=auto`; auch `DOCKER_ROOT_DIR=auto` und `UGOS_DOCKER_DB=auto` werden unterstützt. |
 | Arbeitsverzeichnisse | `BACKUP_DIR`, `TEMP_DIR` und `LOG_DIR` legen Archiv-, Arbeits- und Logpfade fest. |
+| Temporäres Restore-Verzeichnis | `TEMP_DIR` muss Dateirechte und ACLs unverändert übernehmen können und genügend freien Platz für das entpackte Backup bieten. UGOS-Freigaben können beim Entpacken Rechte vererben. Verwende deshalb ein geeignetes lokales Arbeitsverzeichnis, beispielsweise unter `/tmp`, und prüfe dessen freien Platz. Freigaberechte dafür nicht pauschal ändern. |
 | Archiv und Aufbewahrung | `COMPRESS_BACKUP=true` erzeugt ein komprimiertes Archiv; `false` ein TAR-Archiv. `KEEP_BACKUPS` begrenzt die aufbewahrten Backups. |
 | Projektwahl beim Backup | `BACKUP_ALL_PROJECTS`, `INCLUDE_PROJECTS`, `EXCLUDE_PROJECTS` und `EXCLUDE_CONTAINERS` steuern die Auswahl. |
+| Projektpfade beim Backup | Ausgewählte Projektordner müssen vorhanden sein und unter `SOURCE_DIR` liegen. Andernfalls bricht das Backup vor dem Stoppen der Container ab. `BACKUP_PROJECTS_OUTSIDE_SOURCE_DIR=true` erlaubt ausdrücklich auch vorhandene Projektordner außerhalb dieses Pfads. |
 | Standalone-Container | `BACKUP_STANDALONE_CONTAINERS=true` schließt Container ohne Compose-Projekt ein. |
 | Container stoppen | `STOP_CONTAINERS=true` und `STOP_TIMEOUT` steuern das Stoppen vor dem Backup. Zuvor laufende Container werden danach wieder gestartet. |
 | Ausschlüsse | `BACKUP_EXCLUDE_PATHS_FILE=backup-exclude-paths.txt` verweist auf die [Ausschlussliste](DockerBackup/backup-exclude-paths.txt). |
@@ -226,8 +228,10 @@ The complete template is [DockerBackup/dockersich.env.example](DockerBackup/dock
 | Language and display name | `LANGUAGE=de` or `LANGUAGE=en`; `HOST_LABEL` identifies the NAS in logs and emails. |
 | Automatic detection | `SOURCE_DIR=auto`; `DOCKER_ROOT_DIR=auto` and `UGOS_DOCKER_DB=auto` are also supported. |
 | Working directories | `BACKUP_DIR`, `TEMP_DIR` and `LOG_DIR` define archive, temporary and log paths. |
+| Temporary restore directory | `TEMP_DIR` must preserve file permissions and ACLs and have enough free space for the extracted backup. UGOS shares may inherit permissions during extraction. Use a suitable local working directory, for example under `/tmp`, and check its available space. Do not broadly change share permissions to work around this. |
 | Archive and retention | `COMPRESS_BACKUP=true` creates a compressed archive; `false` creates a TAR archive. `KEEP_BACKUPS` limits retained backups. |
 | Backup project selection | `BACKUP_ALL_PROJECTS`, `INCLUDE_PROJECTS`, `EXCLUDE_PROJECTS` and `EXCLUDE_CONTAINERS` control selection. |
+| Backup project paths | Selected project directories must exist and be within `SOURCE_DIR`. Otherwise, backup aborts before stopping containers. `BACKUP_PROJECTS_OUTSIDE_SOURCE_DIR=true` explicitly permits existing project directories outside this path. |
 | Standalone containers | `BACKUP_STANDALONE_CONTAINERS=true` includes containers without a Compose project. |
 | Stopping containers | `STOP_CONTAINERS=true` and `STOP_TIMEOUT` control stopping before backup. Previously running containers are started again afterwards. |
 | Exclusions | `BACKUP_EXCLUDE_PATHS_FILE=backup-exclude-paths.txt` points to the [exclusion list](DockerBackup/backup-exclude-paths.txt). |

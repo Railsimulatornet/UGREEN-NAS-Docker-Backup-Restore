@@ -1182,6 +1182,20 @@ PYSTANDALONE
   find "$target_dir" -type f -exec chmod 644 {} + 2>/dev/null || true
 }
 
+validate_backup_projects(){
+  local project workdir config_files containers images is_standalone
+  while IFS=$'\t' read -r project workdir config_files containers images is_standalone; do
+    [[ "$project" == "project" || -z "$project" ]] && continue
+    [[ "$is_standalone" == "true" || "$project" == standalone_* ]] && continue
+    if [[ -z "$workdir" || ! -d "$workdir" ]]; then
+      die "$(tr_text "Arbeitsordner des ausgewählten Projekts ${project} fehlt: ${workdir}. Keine Container wurden gestoppt." "Selected project ${project} has no existing working directory: ${workdir}. No containers have been stopped.")"
+    fi
+    if is_false "$BACKUP_PROJECTS_OUTSIDE_SOURCE_DIR" && ! path_in_dir "$workdir" "$SOURCE_DIR"; then
+      die "$(tr_text "Ausgewähltes Projekt ${project} liegt außerhalb von SOURCE_DIR: ${workdir}. Quellordner oder Auswahl prüfen; keine Container wurden gestoppt." "Selected project ${project} is outside SOURCE_DIR: ${workdir}. Check the source directory or selection; no containers have been stopped.")"
+    fi
+  done < "${stage_dir}/metadata/selected_projects.tsv"
+}
+
 copy_project_dirs(){
   log_i "[Sicherung] Projektordner werden gesichert." "[Backup] Backing up project folders."
   local inventory="${stage_dir}/metadata/selected_projects.tsv"
@@ -1211,13 +1225,11 @@ copy_project_dirs(){
       base="$project"
     else
       if [[ -z "$workdir" || ! -d "$workdir" ]]; then
-        log_i "[Sicherung] Projekt ${project}: Arbeitsordner fehlt oder existiert nicht: ${workdir}" "[Backup] Project ${project}: working directory missing or not found: ${workdir}"
-        continue
+        die "$(tr_text "Arbeitsordner des ausgewählten Projekts ${project} ist nicht mehr verfügbar: ${workdir}" "Selected project ${project} working directory is no longer available: ${workdir}")"
       fi
 
       if is_false "$BACKUP_PROJECTS_OUTSIDE_SOURCE_DIR" && ! path_in_dir "$workdir" "$SOURCE_DIR"; then
-        log_i "[Sicherung] Projekt ${project}: Arbeitsordner liegt außerhalb von SOURCE_DIR und wird übersprungen: ${workdir}" "[Backup] Project ${project}: working directory is outside SOURCE_DIR and will be skipped: ${workdir}"
-        continue
+        die "$(tr_text "Ausgewähltes Projekt ${project} liegt außerhalb von SOURCE_DIR: ${workdir}" "Selected project ${project} is outside SOURCE_DIR: ${workdir}")"
       fi
       parent="$(dirname "$workdir")"
       base="$(basename "$workdir")"
@@ -1728,6 +1740,8 @@ main(){
     log_i "[Fehler] Keine Projekte für die Sicherung ausgewählt. Backup wird abgebrochen." "[Error] No projects selected for backup. Backup will abort."
     die "$FAILURE_REASON"
   fi
+
+  validate_backup_projects
 
   send_mail "start" "$(mail_subject start)" "$(tr_text 'Backup gestartet' 'Backup started')" "$(build_backup_mail_details start)" "" || true
 
