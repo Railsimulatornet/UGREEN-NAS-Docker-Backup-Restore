@@ -20,6 +20,10 @@ def digest(data):
 
 def payload():
     version = CONFIG['version']
+    if CONFIG['tag'] != 'v' + version or not CONFIG['archive'].endswith(version + '.zip'):
+        raise ValueError('Release tag or archive version mismatch')
+    if any(not name.endswith(version + '.pdf') for name in CONFIG.get('separate_assets', [])):
+        raise ValueError('Manual filename version mismatch')
     for name, marker in CONFIG['version_markers'].items():
         if marker.format(version=version) not in (ROOT / name).read_text(encoding='utf-8-sig'):
             raise ValueError('Version mismatch: ' + name)
