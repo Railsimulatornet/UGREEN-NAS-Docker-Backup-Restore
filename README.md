@@ -105,7 +105,7 @@ cd /volume2/DockerBackup
 
 Komprimierte und unkomprimierte TAR-Backups werden unterstützt.
 
-**Für einen gezielten Restore musst du `RESTORE_PROJECTS` ausfüllen und `RESTORE_ALL_PROJECTS=false` verwenden.** Ist `RESTORE_PROJECTS` leer, berücksichtigt das Skript alle Projekte im Archiv, auch bei `RESTORE_ALL_PROJECTS=false`. Ausschlüsse und die Standalone-Option gelten weiterhin.
+**Für einen gezielten Restore musst du `RESTORE_PROJECTS` ausfüllen und `RESTORE_ALL_PROJECTS=false` verwenden.** Eine leere Auswahl bricht ab. Alle Projekte werden nur mit `RESTORE_ALL_PROJECTS=true` ausgewählt. Ausschlüsse und die Standalone-Option gelten weiterhin. Eigentümer und Dateimodi werden standardmäßig nicht pauschal geändert; vorhandene Konfigurationen mit aktivierter Rechtekorrektur vor einem Restore prüfen.
 
 Prüfe die Ausgabe des Dry-Runs. Setze erst danach `DRY_RUN=false` und starte den Restore erneut. Standardmäßig verlangt das Skript in der interaktiven Konsole die Bestätigung `RESTORE`.
 
@@ -259,7 +259,7 @@ cd /volume2/DockerBackup
 
 Both compressed and uncompressed TAR backups are supported.
 
-**For a selective restore, fill in `RESTORE_PROJECTS` and use `RESTORE_ALL_PROJECTS=false`.** If `RESTORE_PROJECTS` is empty, the script considers all projects in the archive, even when `RESTORE_ALL_PROJECTS=false`. Exclusions and the standalone-container setting still apply.
+**For a selective restore, fill in `RESTORE_PROJECTS` and use `RESTORE_ALL_PROJECTS=false`.** An empty selection aborts. All projects are selected only with `RESTORE_ALL_PROJECTS=true`. Exclusions and the standalone-container setting still apply. Ownership and file modes are preserved by default; review existing configurations that enable permission correction before restoring.
 
 Review the dry-run output. Only then set `DRY_RUN=false` and run the restore again. By default, the script requires the confirmation `RESTORE` in an interactive terminal.
 
