@@ -10,7 +10,8 @@ import io
 import unittest
 
 REPO = Path(__file__).resolve().parents[1]
-SOURCE = (REPO / 'DockerBackup/ugreen-docker-restore.sh').read_text()
+RESTORE = Path(os.environ.get('DOCKER_RESTORE_SOURCE', REPO / 'DockerBackup/ugreen-docker-restore.sh'))
+SOURCE = RESTORE.read_text()
 
 
 class SelectionTests(unittest.TestCase):
@@ -181,7 +182,7 @@ exit 99
                        DRY_RUN=dry_run, SEND_MAIL='false', RESTORE_CONFIRMATION_REQUIRED='false',
                        RESTORE_OVERWRITE_EXISTING='true', AUDIT=str(audit),
                        PATH=str(commands) + os.pathsep + os.environ['PATH'])
-            result = subprocess.run(['bash', str(REPO / 'DockerBackup/ugreen-docker-restore.sh')],
+            result = subprocess.run(['bash', str(RESTORE)],
                                     env=env, capture_output=True, text=True, timeout=15)
             self.assertEqual(result.returncode == 0, expect_success, result.stdout + result.stderr)
             self.assertEqual(audit.read_text().splitlines(), ['info'])

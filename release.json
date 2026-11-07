@@ -1,0 +1,27 @@
+{
+  "version": "1.10.2",
+  "tag": "v1.10.2",
+  "archive": "UGREEN_Docker_Backup_Restore_V1.10.2.zip",
+  "files": [
+    "DockerBackup/backup-exclude-paths.txt",
+    "DockerBackup/dockersich.env.example",
+    "DockerBackup/path-remap.tsv",
+    "DockerBackup/ugreen-docker-backup.sh",
+    "DockerBackup/ugreen-docker-restore.sh",
+    "README.md",
+    "LICENSE",
+    "UGREEN_Docker_BR_DE_EN.pdf",
+    "Changelog.txt"
+  ],
+  "version_markers": {
+    "DockerBackup/ugreen-docker-backup.sh": "SCRIPT_VERSION=\"{version}\"",
+    "DockerBackup/ugreen-docker-restore.sh": "SCRIPT_VERSION=\"{version}\"",
+    "README.md": "Version: **{version}**"
+  },
+  "test_sources": {
+    "DOCKER_RESTORE_SOURCE": "DockerBackup/ugreen-docker-restore.sh"
+  },
+  "separate_assets": [
+    "UGREEN_Docker_BR_DE_EN.pdf"
+  ]
+}
