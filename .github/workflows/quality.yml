@@ -6,6 +6,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -72,4 +76,10 @@ jobs:
           PYCODE
 
       - name: Run isolated regression tests
-        run: python3 -m unittest discover -s tests -v
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install --no-install-recommends -y acl
+          python3 -m unittest discover -s tests -v
+
+      - name: Verify complete release packages and packaged-source regressions
+        run: python scripts/build_release.py --check

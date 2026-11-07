@@ -1,5 +1,7 @@
 # 🚀 UGREEN NAS Docker Backup & Restore
 
+Version: **1.11**
+
 [![Quality](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/Railsimulatornet/UGREEN-NAS-Docker-Backup-Restore/actions/workflows/quality.yml)
 
 ![Docker Backup Pack](Screen/DockerBackupPack.png)
@@ -37,7 +39,7 @@ Dieses Projekt stellt ein leistungsstarkes Backup-, Restore- und Migrationssyste
 │
 ├── README.md
 ├── Changelog.txt
-└── UGREEN_Docker_BR_DE_EN.pdf
+└── UGREEN_Docker_BR_DE_EN_v1.11.pdf
 ```
 
 * * *
@@ -276,7 +278,7 @@ Beispiel:
 Enthalten im Repository:
 
 ```text
-UGREEN_Docker_BR_DE_EN.pdf
+UGREEN_Docker_BR_DE_EN_v1.11.pdf
 ```
 
 Das Handbuch enthält die vollständige Schritt-für-Schritt-Anleitung für Installation, Konfiguration, Backup, Restore und Migration.
