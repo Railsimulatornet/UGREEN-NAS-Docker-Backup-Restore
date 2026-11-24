@@ -323,3 +323,7 @@ Community project by **Roman Glos / Railsimulatornet**, not an official UGREEN p
 ## Paketprüfung / Package verification
 
 [BUILDING.md](BUILDING.md) beschreibt den geprüften Paketbau. / See [BUILDING.md](BUILDING.md) for package build and verification.
+
+## Wartung / Maintenance
+
+[MAINTENANCE.md](MAINTENANCE.md) beschreibt die automatischen Prüfungen und Paketupdates. / Automatic checks and package updates are described in [MAINTENANCE.md](MAINTENANCE.md).
